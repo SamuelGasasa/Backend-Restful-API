@@ -65,3 +65,28 @@ app.post("/b", (req, res) => {
     );
   }
 });
+
+// PUT request to /b/{id} get in the body params updated object and return the updated object
+app.put("/b/:id", (req, res) => {
+  const { id } = req.params;
+  const { body } = req;
+  if (!fs.existsSync(`./Backend/tasks/${id}.json`)) {
+    res.status(400).send(`{
+        "message": "Bin Id not found",
+      }`);
+  } else {
+    body.id = id;
+    fs.writeFile(
+      `./Backend/tasks/${id}.json`,
+      JSON.stringify(body, null, 4),
+      (err) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send();
+        } else {
+          res.status(201).send(body);
+        }
+      }
+    );
+  }
+});
