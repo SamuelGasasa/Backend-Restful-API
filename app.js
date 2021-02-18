@@ -108,3 +108,7 @@ app.delete("/b/:id", (req, res) => {
     });
   }
 });
+
+app.listen(port, () => {
+  console.log(`app listening on port: ${port}`);
+});
