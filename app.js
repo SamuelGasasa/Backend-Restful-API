@@ -23,3 +23,21 @@ app.get("/b", (req, res) => {
     }
   }
 });
+
+// GET request to /b/{id} returns the details of the object
+app.get("/b/:id", (req, res) => {
+  const { id } = req.params;
+  if (!fs.existsSync(`./Backend/tasks/${id}.json`)) {
+    res.status(400);
+    res.statusMessage = "Invalid Bin Id provided";
+    console.log("Invalid Bin Id provided");
+    res.send();
+  } else {
+    fs.readFile(`./Backend/tasks/${id}.json`, (err, data) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send();
+      } else res.send(data);
+    });
+  }
+});
