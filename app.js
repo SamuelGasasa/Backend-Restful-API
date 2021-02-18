@@ -3,7 +3,9 @@ const uuid = require("uuid");
 const app = express();
 const port = 3000;
 const fs = require("fs");
+const timeOut = require("./middlewares/timeOutMiddleware.js");
 
+app.use(timeOut);
 app.use(express.json());
 
 // GET request to /b returns a list of objects
