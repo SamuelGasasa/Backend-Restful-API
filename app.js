@@ -10,14 +10,14 @@ app.use(express.json());
 
 // GET request to /b returns a list of objects
 app.get("/b", (req, res) => {
-  const files = fs.readdirSync("./Backend/tasks");
+  const files = fs.readdirSync("./tasks");
   const arr = [];
   if (files.length === 0) {
     res.send("you have no files");
   } else {
     try {
       files.forEach((file) => {
-        arr.push(JSON.parse(fs.readFileSync(`./Backend/tasks/${file}`)));
+        arr.push(JSON.parse(fs.readFileSync(`./tasks/${file}`)));
       });
       res.send(arr);
     } catch (err) {
@@ -29,13 +29,13 @@ app.get("/b", (req, res) => {
 // GET request to /b/{id} returns the details of the object
 app.get("/b/:id", (req, res) => {
   const { id } = req.params;
-  if (!fs.existsSync(`./Backend/tasks/${id}.json`)) {
+  if (!fs.existsSync(`./tasks/${id}.json`)) {
     res.status(400);
     res.statusMessage = "Invalid Bin Id provided";
     console.log("Invalid Bin Id provided");
     res.send();
   } else {
-    fs.readFile(`./Backend/tasks/${id}.json`, (err, data) => {
+    fs.readFile(`./tasks/${id}.json`, (err, data) => {
       if (err) {
         console.log(err);
         res.status(500).send();
@@ -54,17 +54,13 @@ app.post("/b", (req, res) => {
   } else {
     const id = uuid.v4();
     body.id = id;
-    fs.writeFile(
-      `./Backend/tasks/${id}.json`,
-      JSON.stringify(body, null, 4),
-      (err) => {
-        if (err) {
-          res.status(500).json({ message: "Error!", error: err });
-        } else {
-          res.status(201).json(objectsArr);
-        }
+    fs.writeFile(`./tasks/${id}.json`, JSON.stringify(body, null, 4), (err) => {
+      if (err) {
+        res.status(500).json({ message: "Error!", error: err });
+      } else {
+        res.status(201).json(objectsArr);
       }
-    );
+    });
   }
 });
 
@@ -72,36 +68,32 @@ app.post("/b", (req, res) => {
 app.put("/b/:id", (req, res) => {
   const { id } = req.params;
   const { body } = req;
-  if (!fs.existsSync(`./Backend/tasks/${id}.json`)) {
+  if (!fs.existsSync(`./tasks/${id}.json`)) {
     res.status(400).send(`{
         "message": "Bin Id not found",
       }`);
   } else {
     body.id = id;
-    fs.writeFile(
-      `./Backend/tasks/${id}.json`,
-      JSON.stringify(body, null, 4),
-      (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).send();
-        } else {
-          res.status(201).send(body);
-        }
+    fs.writeFile(`./tasks/${id}.json`, JSON.stringify(body, null, 4), (err) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send();
+      } else {
+        res.status(201).send(body);
       }
-    );
+    });
   }
 });
 
 // DELETE request to /b/{id} delete a object
 app.delete("/b/:id", (req, res) => {
   const { id } = req.params;
-  if (!fs.existsSync(`./Backend/tasks/${id}.json`)) {
+  if (!fs.existsSync(`./tasks/${id}.json`)) {
     res.status(400).send(`{
         "message": "Bin Id not found",
       }`);
   } else {
-    fs.unlink(`./Backend/tasks/${id}.json`, (err) => {
+    fs.unlink(`./tasks/${id}.json`, (err) => {
       if (err) {
         res.status(500).json({ message: "Error!", error: err });
       } else {
