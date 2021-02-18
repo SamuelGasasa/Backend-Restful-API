@@ -41,3 +41,27 @@ app.get("/b/:id", (req, res) => {
     });
   }
 });
+
+// POST request to /b create new object and return the new object
+app.post("/b", (req, res) => {
+  const { body } = req;
+  if (Object.keys(body).length === 0) {
+    res.status(400).json(`{
+        "message": "Bin can not be blank",
+      }`);
+  } else {
+    const id = uuid.v4();
+    body.id = id;
+    fs.writeFile(
+      `./Backend/tasks/${id}.json`,
+      JSON.stringify(body, null, 4),
+      (err) => {
+        if (err) {
+          res.status(500).json({ message: "Error!", error: err });
+        } else {
+          res.status(201).json(objectsArr);
+        }
+      }
+    );
+  }
+});
