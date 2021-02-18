@@ -90,3 +90,21 @@ app.put("/b/:id", (req, res) => {
     );
   }
 });
+
+// DELETE request to /b/{id} delete a object
+app.delete("/b/:id", (req, res) => {
+  const { id } = req.params;
+  if (!fs.existsSync(`./Backend/tasks/${id}.json`)) {
+    res.status(400).send(`{
+        "message": "Bin Id not found",
+      }`);
+  } else {
+    fs.unlink(`./Backend/tasks/${id}.json`, (err) => {
+      if (err) {
+        res.status(500).json({ message: "Error!", error: err });
+      } else {
+        res.status(201).send("Success");
+      }
+    });
+  }
+});
