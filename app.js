@@ -30,16 +30,15 @@ app.get("/b", (req, res) => {
 app.get("/b/:id", (req, res) => {
   const { id } = req.params;
   if (!fs.existsSync(`./tasks/${id}.json`)) {
-    res.status(400);
     res.statusMessage = "Invalid Bin Id provided";
     console.log("Invalid Bin Id provided");
-    res.send();
+    res.sendStatus(400);
   } else {
     fs.readFile(`./tasks/${id}.json`, (err, data) => {
       if (err) {
         console.log(err);
-        res.status(500).send();
-      } else res.send(data);
+        res.sendStatus(500);
+      } else res.send(JSON.parse(data));
     });
   }
 });
@@ -48,17 +47,19 @@ app.get("/b/:id", (req, res) => {
 app.post("/b", (req, res) => {
   const { body } = req;
   if (Object.keys(body).length === 0) {
-    res.status(400).json(`{
-        "message": "Bin can not be blank",
-      }`);
+    res.status(400).send({
+      message: "Bin can not be blank",
+    });
   } else {
     const id = uuid.v4();
     body.id = id;
+    body.hello = "hello";
+    body.success = true;
     fs.writeFile(`./tasks/${id}.json`, JSON.stringify(body, null, 4), (err) => {
       if (err) {
         res.status(500).json({ message: "Error!", error: err });
       } else {
-        res.status(201).json(objectsArr);
+        res.status(201).send(body);
       }
     });
   }
@@ -69,15 +70,15 @@ app.put("/b/:id", (req, res) => {
   const { id } = req.params;
   const { body } = req;
   if (!fs.existsSync(`./tasks/${id}.json`)) {
-    res.status(400).send(`{
-        "message": "Bin Id not found",
-      }`);
+    res.status(400).send({
+      message: "Bin Id not found",
+    });
   } else {
     body.id = id;
     fs.writeFile(`./tasks/${id}.json`, JSON.stringify(body, null, 4), (err) => {
       if (err) {
         console.log(err);
-        res.status(500).send();
+        res.sendStatus(500);
       } else {
         res.status(201).send(body);
       }
@@ -106,3 +107,5 @@ app.delete("/b/:id", (req, res) => {
 app.listen(port, () => {
   console.log(`app listening on port: ${port}`);
 });
+
+module.exports = app;
